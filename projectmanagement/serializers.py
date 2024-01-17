@@ -1,28 +1,32 @@
 from rest_framework import serializers
-from .models import *
+from . import models
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model = Workspace
+        model = models.Workspace
         fields = ['title', 'description']
 
 
 class HashtagSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model = Hashtag
+        model = models.Hashtag
         fields = ['title', 'workspace']
 
 
 class SprintSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model = Sprint
+        model = models.Sprint
         fields = ['title', 'goal', 'workspace']
 
 
 class IssueSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model = Epic
+        model = models.Epic
         fields = ['created',
                   'title',
                   'description',
@@ -36,30 +40,54 @@ class IssueSerializer(serializers.ModelSerializer):
 
 
 class EpicSerializer(IssueSerializer):
+    stories = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='title'
+    )
+
+    bugs = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='title'
+    )
+
+    tasks = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='title'
+    )
+
     class Meta:
-        model = Epic
+        model = models.Epic
         fields = IssueSerializer.Meta.fields + ['workspace']
 
 
 class StorySerializer(IssueSerializer):
+    subtasks = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='title'
+    )
+
     class Meta:
-        model = Story
+        model = models.Story
         fields = IssueSerializer.Meta.fields + ['epic', 'sprint']
 
 
 class BugSerializer(IssueSerializer):
     class Meta:
-        model = Bug
+        model = models.Bug
         fields = IssueSerializer.Meta.fields + ['epic', 'sprint']
 
 
 class TaskSerializer(IssueSerializer):
     class Meta:
-        model = Task
+        model = models.Task
         fields = IssueSerializer.Meta.fields + ['epic', 'sprint']
 
 
 class SubtaskSerializer(IssueSerializer):
     class Meta:
-        model = Subtask
+        model = models.Subtask
         fields = IssueSerializer.Meta.fields + ['story']

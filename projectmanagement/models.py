@@ -1,5 +1,3 @@
-from django.db import models
-
 # Create your models here.
 from django.db import models
 
@@ -89,14 +87,15 @@ class Bug(Issue):
 
 class Task(Issue):
     epic = models.ForeignKey(Epic, blank=False, null=True, on_delete=models.CASCADE)
-    sprint = models.ForeignKey(Sprint, blank=True, null=True, default='', on_delete=models.CASCADE)
+    sprint = models.ForeignKey(Sprint, blank=True, null=True, default='',
+                               on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
 
 
 class Subtask(Issue):
-    story = models.ForeignKey(Story, blank=False, null=True, on_delete=models.CASCADE)
+    story = models.ForeignKey(Story, related_name='subtasks', blank=False, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
