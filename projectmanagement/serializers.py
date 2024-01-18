@@ -18,9 +18,15 @@ class HashtagSerializer(serializers.ModelSerializer):
 
 class SprintSerializer(serializers.ModelSerializer):
 
+    stories = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='title'
+    )
+
     class Meta:
         model = models.Sprint
-        fields = ['title', 'goal', 'workspace']
+        fields = ['title', 'goal', 'workspace', 'stories']
 
 
 class IssueSerializer(serializers.ModelSerializer):
@@ -40,19 +46,20 @@ class IssueSerializer(serializers.ModelSerializer):
 
 
 class EpicSerializer(IssueSerializer):
+
     stories = serializers.SlugRelatedField(
         many=True,
         read_only=True,
         slug_field='title'
     )
 
-    bugs = serializers.SlugRelatedField(
+    bugs2epic = serializers.SlugRelatedField(
         many=True,
         read_only=True,
         slug_field='title'
     )
 
-    tasks = serializers.SlugRelatedField(
+    tasks2epic = serializers.SlugRelatedField(
         many=True,
         read_only=True,
         slug_field='title'
@@ -60,7 +67,7 @@ class EpicSerializer(IssueSerializer):
 
     class Meta:
         model = models.Epic
-        fields = IssueSerializer.Meta.fields + ['workspace']
+        fields = IssueSerializer.Meta.fields + ['workspace', 'stories', 'bugs2epic', 'tasks2epic']
 
 
 class StorySerializer(IssueSerializer):

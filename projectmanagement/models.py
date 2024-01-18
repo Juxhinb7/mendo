@@ -70,15 +70,15 @@ class Epic(Issue):
 
 
 class Story(Issue):
-    epic = models.ForeignKey(Epic, blank=False, null=True, on_delete=models.CASCADE)
-    sprint = models.ForeignKey(Sprint, blank=True, null=True, on_delete=models.CASCADE)
+    epic = models.ForeignKey(Epic, related_name='stories', blank=False, null=True, on_delete=models.CASCADE)
+    sprint = models.ForeignKey(Sprint, related_name='stories', blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
 
 
 class Bug(Issue):
-    epic = models.ForeignKey(Epic, blank=False, null=True, on_delete=models.CASCADE)
+    epic = models.ForeignKey(Epic, related_name='bugs2epic', blank=False, null=True, on_delete=models.CASCADE)
     sprint = models.ForeignKey(Sprint, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -86,7 +86,7 @@ class Bug(Issue):
 
 
 class Task(Issue):
-    epic = models.ForeignKey(Epic, blank=False, null=True, on_delete=models.CASCADE)
+    epic = models.ForeignKey(Epic, related_name='tasks2epic', blank=False, null=True, on_delete=models.CASCADE)
     sprint = models.ForeignKey(Sprint, blank=True, null=True, default='',
                                on_delete=models.CASCADE)
 
