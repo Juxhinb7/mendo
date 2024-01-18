@@ -14,7 +14,7 @@ class Workspace(models.Model):
 
 class Hashtag(models.Model):
     title = models.CharField(max_length=50)
-    workspace = models.ForeignKey(Workspace, blank=False, null=True, on_delete=models.CASCADE)
+    workspace = models.ForeignKey(Workspace, related_name='hashtags', blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -47,7 +47,6 @@ class Issue(models.Model):
         default=Priority.HIGH
     )
     estimate = models.FloatField()
-    hashtag = models.ForeignKey(Hashtag, blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -56,20 +55,24 @@ class Issue(models.Model):
 class Sprint(models.Model):
     title = models.CharField(max_length=50)
     goal = models.CharField(max_length=100)
-    workspace = models.ForeignKey(Workspace, blank=False, null=True, on_delete=models.CASCADE)
+    workspace = models.ForeignKey(Workspace, related_name='sprints', blank=False, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
 
 
 class Epic(Issue):
-    workspace = models.ForeignKey(Workspace, blank=False, null=True, on_delete=models.CASCADE)
+    hashtag = models.ForeignKey(Hashtag,
+                                related_name='epics', blank=True, null=True, on_delete=models.CASCADE)
+    workspace = models.ForeignKey(Workspace, related_name='epics', blank=False, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
 
 
 class Story(Issue):
+    hashtag = models.ForeignKey(Hashtag,
+                                related_name='stories', blank=True, null=True, on_delete=models.CASCADE)
     epic = models.ForeignKey(Epic, related_name='stories', blank=False, null=True, on_delete=models.CASCADE)
     sprint = models.ForeignKey(Sprint, related_name='stories', blank=True, null=True, on_delete=models.CASCADE)
 
@@ -78,7 +81,9 @@ class Story(Issue):
 
 
 class Bug(Issue):
-    epic = models.ForeignKey(Epic, related_name='bugs2epic', blank=False, null=True, on_delete=models.CASCADE)
+    hashtag = models.ForeignKey(Hashtag,
+                                related_name='bugs', blank=True, null=True, on_delete=models.CASCADE)
+    epic = models.ForeignKey(Epic, related_name='bugs', blank=False, null=True, on_delete=models.CASCADE)
     sprint = models.ForeignKey(Sprint, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -86,7 +91,9 @@ class Bug(Issue):
 
 
 class Task(Issue):
-    epic = models.ForeignKey(Epic, related_name='tasks2epic', blank=False, null=True, on_delete=models.CASCADE)
+    hashtag = models.ForeignKey(Hashtag,
+                                related_name='tasks', blank=True, null=True, on_delete=models.CASCADE)
+    epic = models.ForeignKey(Epic, related_name='tasks', blank=False, null=True, on_delete=models.CASCADE)
     sprint = models.ForeignKey(Sprint, blank=True, null=True, default='',
                                on_delete=models.CASCADE)
 
@@ -95,6 +102,8 @@ class Task(Issue):
 
 
 class Subtask(Issue):
+    hashtag = models.ForeignKey(Hashtag,
+                                related_name='subtasks', blank=True, null=True, on_delete=models.CASCADE)
     story = models.ForeignKey(Story, related_name='subtasks', blank=False, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
