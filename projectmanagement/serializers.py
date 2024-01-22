@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from . import models
+from . import custom_validators
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
@@ -76,6 +77,8 @@ class SprintSerializer(serializers.ModelSerializer):
 
 
 class IssueSerializer(serializers.ModelSerializer):
+    start_date = serializers.DateTimeField(validators=[custom_validators.validate_date])
+    end_date = serializers.DateTimeField(validators=[custom_validators.validate_date])
 
     class Meta:
         model = models.Epic
@@ -113,7 +116,7 @@ class EpicSerializer(IssueSerializer):
 
     class Meta:
         model = models.Epic
-        fields = IssueSerializer.Meta.fields + ['workspace', 'stories', 'bugs', 'tasks']
+        fields = IssueSerializer.Meta.fields + ['hashtag', 'workspace', 'stories', 'bugs', 'tasks']
 
 
 class StorySerializer(IssueSerializer):
@@ -125,22 +128,22 @@ class StorySerializer(IssueSerializer):
 
     class Meta:
         model = models.Story
-        fields = IssueSerializer.Meta.fields + ['epic', 'sprint']
+        fields = IssueSerializer.Meta.fields + ['hashtag', 'epic', 'sprint', 'subtasks']
 
 
 class BugSerializer(IssueSerializer):
     class Meta:
         model = models.Bug
-        fields = IssueSerializer.Meta.fields + ['epic', 'sprint']
+        fields = IssueSerializer.Meta.fields + ['hashtag', 'epic', 'sprint']
 
 
 class TaskSerializer(IssueSerializer):
     class Meta:
         model = models.Task
-        fields = IssueSerializer.Meta.fields + ['epic', 'sprint']
+        fields = IssueSerializer.Meta.fields + ['hashtag', 'epic', 'sprint']
 
 
 class SubtaskSerializer(IssueSerializer):
     class Meta:
         model = models.Subtask
-        fields = IssueSerializer.Meta.fields + ['story']
+        fields = IssueSerializer.Meta.fields + ['hashtag', 'story']
