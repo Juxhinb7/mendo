@@ -4,6 +4,8 @@ from . import custom_validators
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     hashtags = serializers.SlugRelatedField(
         many=True,
         read_only=True,
@@ -24,10 +26,12 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Workspace
-        fields = ['title', 'description', 'hashtags', 'sprints', 'epics']
+        fields = ['id', 'title', 'description', 'hashtags', 'sprints', 'epics']
 
 
 class HashtagSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     epics = serializers.SlugRelatedField(
         many=True,
         read_only=True,
@@ -60,10 +64,11 @@ class HashtagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Hashtag
-        fields = ['title', 'workspace', 'epics', 'stories', 'bugs', 'tasks', 'subtasks']
+        fields = ['id', 'title', 'workspace', 'epics', 'stories', 'bugs', 'tasks', 'subtasks']
 
 
 class SprintSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
 
     stories = serializers.SlugRelatedField(
         many=True,
@@ -73,16 +78,19 @@ class SprintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Sprint
-        fields = ['title', 'goal', 'workspace', 'stories']
+        fields = ['id', 'title', 'goal', 'workspace', 'stories']
 
 
 class IssueSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     start_date = serializers.DateTimeField(validators=[custom_validators.validate_date])
     end_date = serializers.DateTimeField(validators=[custom_validators.validate_date])
 
     class Meta:
         model = models.Epic
-        fields = ['created',
+        fields = ['id',
+                  'created',
                   'title',
                   'description',
                   'start_date',
