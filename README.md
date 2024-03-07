@@ -1,2 +1,2 @@
 # ![alt text](logo.png "Title")
- This innovative project management tool incorporates support for Agile methodologies. It will include functionalities such as task scheduling, real-time notifications, and note-taking capabilities to streamline your project operations.
+ This project management tool incorporates support for Agile methodologies. It will include functionalities such as task scheduling, real-time notifications, and note-taking capabilities to streamline your project operations.
