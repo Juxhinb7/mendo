@@ -1,60 +1,60 @@
 from django.test import TestCase
 from projectmanagement import models
 
-# Create your tests here.
 
-
-class WorkspaceModelTestCase(TestCase):
+class ProjectModelTestCase(TestCase):
     def setUp(self):
-        self.workspace = models.Workspace.objects.create(title="Workout", description="This is about workout.")
-        self.workspace.save()
+        self.project = models.Project.objects.create(title="Workout", description="This is about workout.")
+        self.project.save()
 
     def tearDown(self):
-        self.workspace.delete()
+        self.project.delete()
 
     def test_model_content(self):
-        self.assertEqual(self.workspace.title, "Workout")
-        self.assertEqual(self.workspace.description, "This is about workout.")
+        self.assertEqual(self.project.title, "Workout")
+        self.assertEqual(self.project.description, "This is about workout.")
 
 
 class HashtagModelTestCase(TestCase):
     def setUp(self):
         self.title = "Gym"
-        self.desription = "Everything about working out."
-        self.workspace = models.Workspace.objects.create(title=self.title,
-                                                         description=self.desription)
-        self.workspace.save()
-        self.hashtag = models.Hashtag.objects.create(title="Working out", workspace=self.workspace)
+        self.description = "Everything about working out."
+        self.project = models.Project.objects.create(title=self.title, description=self.description)
+        self.project.save()
+        self.hashtag = models.Hashtag.objects.create(title="Working out", project=self.project)
         self.hashtag.save()
 
     def tearDown(self):
-        self.workspace.delete()
+        self.project.delete()
         self.hashtag.delete()
 
     def test_hashtag_content(self):
         self.assertEqual(self.hashtag.title, "Working out")
-        self.assertEqual(self.hashtag.workspace.title, self.title)
-        self.assertEqual(self.hashtag.workspace.description, self.desription)
+        self.assertEqual(self.hashtag.project.title, self.title)
+        self.assertEqual(self.hashtag.project.description, self.description)
 
 
 class SprintModelTestCase(TestCase):
     def setUp(self):
         self.title = "Work sprint"
         self.goal = "Work for 2 weeks extremely hard"
-        self.workspace = models.Workspace.objects.create(title="Work", description="About working")
-        self.workspace.save()
-        self.sprint = models.Sprint.objects.create(title=self.title, goal=self.goal, workspace=self.workspace)
+        self.project = models.Project.objects.create(title="Work", description="About working")
+        self.project.save()
+        self.sprint = models.Sprint.objects.create(title=self.title, goal=self.goal,
+                                                   start_date="2024-05-4 04:33:23",
+                                                   end_date="2025-06-4 03:32:22",
+                                                   project=self.project)
         self.sprint.save()
 
     def tearDown(self):
-        self.workspace.delete()
+        self.project.delete()
         self.sprint.delete()
 
     def test_sprint_content(self):
         self.assertEqual(self.sprint.title, "Work sprint")
         self.assertEqual(self.sprint.goal, "Work for 2 weeks extremely hard")
-        self.assertEqual(self.sprint.workspace.title, "Work")
-        self.assertEqual(self.sprint.workspace.description, "About working")
+        self.assertEqual(self.sprint.project.title, "Work")
+        self.assertEqual(self.sprint.project.description, "About working")
 
 
 class EpicModelTestCase(TestCase):
@@ -68,8 +68,8 @@ class EpicModelTestCase(TestCase):
         self.estimate = 4
         self.hashtag = models.Hashtag.objects.create(title="Working out")
         self.hashtag.save()
-        self.workspace = models.Workspace.objects.create(title="Fitness", description="All about fitness.")
-        self.workspace.save()
+        self.project = models.Project.objects.create(title="Fitness", description="All about fitness.")
+        self.project.save()
         self.epic = models.Epic.objects.create(
             title=self.title,
             description=self.description,
@@ -79,14 +79,14 @@ class EpicModelTestCase(TestCase):
             priority=self.priority,
             estimate=self.estimate,
             hashtag=self.hashtag,
-            workspace=self.workspace
+            project=self.project
         )
         self.epic.save()
 
     def tearDown(self):
         self.epic.delete()
         self.hashtag.delete()
-        self.workspace.delete()
+        self.project.delete()
 
     def test_epic_content(self):
         self.assertEqual(self.epic.title, self.title)
@@ -97,7 +97,7 @@ class EpicModelTestCase(TestCase):
         self.assertEqual(self.epic.priority, self.priority)
         self.assertEqual(self.epic.estimate, self.estimate)
         self.assertEqual(self.epic.hashtag.title, self.hashtag.title)
-        self.assertEqual(self.epic.workspace.title, self.workspace.title)
+        self.assertEqual(self.epic.project.title, self.project.title)
 
 
 class StoryModelTestCase(TestCase):
@@ -111,11 +111,13 @@ class StoryModelTestCase(TestCase):
         self.estimate = 7.5
         self.hashtag = models.Hashtag.objects.create(title="Exercising")
         self.hashtag.save()
-        self.workspace = models.Workspace.objects.create(title="Fitness", description="About working out.")
-        self.workspace.save()
+        self.project = models.Project.objects.create(title="Fitness", description="About working out.")
+        self.project.save()
         self.sprint = models.Sprint.objects.create(title="Fitness sprint",
                                                    goal="Working out a couple weeks",
-                                                   workspace=self.workspace)
+                                                   start_date="2024-08-09 09:32:22",
+                                                   end_date="2024-09-10 09:45:32",
+                                                   project=self.project)
         self.sprint.save()
         self.epic = models.Epic.objects.create(title="Exercising Project",
                                                description="All about exercising for about a few months",
@@ -124,7 +126,7 @@ class StoryModelTestCase(TestCase):
                                                status=1,
                                                priority=3,
                                                estimate=120,
-                                               workspace=self.workspace,
+                                               project=self.project,
                                                )
         self.epic.save()
         self.story = models.Story.objects.create(title=self.title,
@@ -141,7 +143,7 @@ class StoryModelTestCase(TestCase):
     def tearDown(self):
         self.story.delete()
         self.epic.delete()
-        self.workspace.delete()
+        self.project.delete()
         self.hashtag.delete()
 
     def test_story_content(self):
@@ -165,8 +167,8 @@ class BugTestCase(TestCase):
         self.status = 1
         self.priority = 2
         self.estimate = 20.2
-        self.workspace = models.Workspace.objects.create(title="Self help", description="All about self help.")
-        self.workspace.save()
+        self.project = models.Project.objects.create(title="Self help", description="All about self help.")
+        self.project.save()
         self.epic = models.Epic.objects.create(title="Build Discipline",
                                                description="Find ways to build discipline.",
                                                start_date="2025-04-09 10:12:24",
@@ -174,7 +176,7 @@ class BugTestCase(TestCase):
                                                status=1,
                                                priority=2,
                                                estimate=12,
-                                               workspace=self.workspace)
+                                               project=self.project)
         self.epic.save()
         self.bug = models.Bug.objects.create(title=self.title,
                                              description=self.description,
@@ -266,11 +268,11 @@ class Subtask(TestCase):
         self.estimate = 32
         self.hashtag = models.Hashtag.objects.create(title="Doing chores")
         self.hashtag.save()
-        self.workspace = models.Workspace.objects.create(
+        self.project = models.Project.objects.create(
             title="Work",
             description="All about work."
         )
-        self.workspace.save()
+        self.project.save()
         self.epic = models.Epic.objects.create(
             title="Do the job",
             description="A big part of doing the job that needs to be done",
@@ -279,7 +281,7 @@ class Subtask(TestCase):
             status=2,
             priority=3,
             estimate=52,
-            workspace=self.workspace
+            project=self.project
         )
         self.epic.save()
         self.story = models.Story.objects.create(
@@ -308,7 +310,7 @@ class Subtask(TestCase):
         self.subtask.delete()
         self.story.delete()
         self.epic.delete()
-        self.workspace.delete()
+        self.project.delete()
         self.hashtag.delete()
 
     def test_subtask_content(self):
