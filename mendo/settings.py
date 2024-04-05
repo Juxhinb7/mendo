@@ -15,6 +15,8 @@ from datetime import timedelta
 from dotenv import load_dotenv
 from dotenv import dotenv_values
 
+APPEND_SLASH=False
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,7 +33,7 @@ SECRET_KEY = env_values["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.vercel.app']
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -88,12 +90,7 @@ WSGI_APPLICATION = 'mendo.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+DATABASES = {}
 
 
 # Password validation
