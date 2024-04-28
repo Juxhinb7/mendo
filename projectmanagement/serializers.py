@@ -86,6 +86,20 @@ class HashtagSerializer(serializers.ModelSerializer):
         extra_kwargs = {'user': {'read_only': True}}
 
 
+class StatusIssueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.StatusIssue
+        fields = ['status']
+        abstract = True
+
+
+class StateIssueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.StateIssue
+        fields = ['state']
+        abstract = True
+
+
 class SprintSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
 
@@ -97,7 +111,14 @@ class SprintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Sprint
-        fields = ['id', 'user', 'title', 'goal', 'start_date', 'end_date', 'project', 'stories']
+        fields = ['id',
+                  'user',
+                  'title',
+                  'goal',
+                  'start_date',
+                  'end_date',
+                  'project',
+                  'stories'] + StateIssueSerializer.Meta.fields
         extra_kwargs = {'user': {'read_only': True}}
 
 
@@ -107,20 +128,19 @@ class IssueSerializer(serializers.ModelSerializer):
     end_date = serializers.DateTimeField(validators=[custom_validators.validate_date])
 
     class Meta:
-        model = models.Epic
+        model = models.Issue
         fields = ['id',
                   'created',
                   'title',
                   'description',
                   'start_date',
                   'end_date',
-                  'status',
                   'priority',
                   'estimate']
         abstract = True
 
 
-class EpicSerializer(IssueSerializer):
+class EpicSerializer(IssueSerializer, StatusIssueSerializer):
 
     stories = serializers.SlugRelatedField(
         many=True,
@@ -147,11 +167,12 @@ class EpicSerializer(IssueSerializer):
 
     class Meta:
         model = models.Epic
-        fields = IssueSerializer.Meta.fields + ['user', 'hashtag', 'project', 'stories', 'bugs', 'tasks', 'comments']
+        fields = IssueSerializer.Meta.fields + StatusIssueSerializer.Meta.fields + [
+            'user', 'hashtag', 'project', 'stories', 'bugs', 'tasks', 'comments']
         extra_kwargs = {'user': {'read_only': True}}
 
 
-class StorySerializer(IssueSerializer):
+class StorySerializer(IssueSerializer, StatusIssueSerializer, StateIssueSerializer):
     subtasks = serializers.SlugRelatedField(
         many=True,
         read_only=True,
@@ -165,11 +186,12 @@ class StorySerializer(IssueSerializer):
 
     class Meta:
         model = models.Story
-        fields = IssueSerializer.Meta.fields + ['user', 'hashtag', 'epic', 'sprint', 'subtasks', 'comments']
+        fields = IssueSerializer.Meta.fields + StatusIssueSerializer.Meta.fields + StateIssueSerializer.Meta.fields + [
+            'user', 'hashtag', 'epic', 'sprint', 'subtasks', 'comments']
         extra_kwargs = {'user': {'read_only': True}}
 
 
-class BugSerializer(IssueSerializer):
+class BugSerializer(IssueSerializer, StatusIssueSerializer, StateIssueSerializer):
     comments = CommentField(
         many=True,
         read_only=True
@@ -177,11 +199,12 @@ class BugSerializer(IssueSerializer):
 
     class Meta:
         model = models.Bug
-        fields = IssueSerializer.Meta.fields + ['user', 'hashtag', 'epic', 'sprint', 'comments']
+        fields = IssueSerializer.Meta.fields + StatusIssueSerializer.Meta.fields + StateIssueSerializer.Meta.fields + [
+            'user', 'hashtag', 'epic', 'sprint', 'comments']
         extra_kwargs = {'user': {'read_only': True}}
 
 
-class TaskSerializer(IssueSerializer):
+class TaskSerializer(IssueSerializer, StatusIssueSerializer, StateIssueSerializer):
     comments = CommentField(
         many=True,
         read_only=True
@@ -189,11 +212,12 @@ class TaskSerializer(IssueSerializer):
 
     class Meta:
         model = models.Task
-        fields = IssueSerializer.Meta.fields + ['user', 'hashtag', 'epic', 'sprint', 'comments']
+        fields = IssueSerializer.Meta.fields + StatusIssueSerializer.Meta.fields + StateIssueSerializer.Meta.fields + [
+            'user', 'hashtag', 'epic', 'sprint', 'comments']
         extra_kwargs = {'user': {'read_only': True}}
 
 
-class SubtaskSerializer(IssueSerializer):
+class SubtaskSerializer(IssueSerializer, StatusIssueSerializer, StateIssueSerializer):
     comments = CommentField(
         many=True,
         read_only=True
@@ -201,5 +225,6 @@ class SubtaskSerializer(IssueSerializer):
 
     class Meta:
         model = models.Subtask
-        fields = IssueSerializer.Meta.fields + ['user', 'hashtag', 'story', 'comments']
+        fields = IssueSerializer.Meta.fields + StatusIssueSerializer.Meta.fields + StateIssueSerializer.Meta.fields + [
+            'user', 'hashtag', 'story', 'comments']
         extra_kwargs = {'user': {'read_only': True}}

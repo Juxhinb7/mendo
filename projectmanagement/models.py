@@ -22,6 +22,21 @@ class Hashtag(models.Model):
         return self.title
 
 
+class StatusIssue(models.Model):
+    class Status(models.IntegerChoices):
+        TO_DO = 1, "To Do"
+        IN_PROGRESS = 2, "In Progress"
+        DONE = 3, "Done"
+
+    status = models.PositiveIntegerField(
+        choices=Status.choices,
+        default=Status.TO_DO
+    )
+
+    class Meta:
+        abstract = True
+
+
 class Issue(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=50)
@@ -29,20 +44,11 @@ class Issue(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
 
-    class Status(models.IntegerChoices):
-        TO_DO = 1, "To Do"
-        IN_PROGRESS = 2, "In Progress"
-        DONE = 3, "Done"
-
     class Priority(models.IntegerChoices):
         LOW = 1, "Low"
         MEDIUM = 2, "Medium"
         HIGH = 3, "High"
 
-    status = models.PositiveIntegerField(
-        choices=Status.choices,
-        default=Status.TO_DO
-    )
     priority = models.PositiveIntegerField(
         choices=Priority.choices,
         default=Priority.HIGH
@@ -53,7 +59,21 @@ class Issue(models.Model):
         abstract = True
 
 
-class Sprint(models.Model):
+class StateIssue(models.Model):
+    class State(models.IntegerChoices):
+        BACKLOG = 1, "Backlog"
+        ACTIVE = 2, "Active"
+
+    state = models.PositiveIntegerField(
+        choices=State.choices,
+        default=State.BACKLOG
+    )
+
+    class Meta:
+        abstract = True
+
+
+class Sprint(StateIssue):
     user = models.ForeignKey("users.CustomUser", blank=False, null=True, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     goal = models.CharField(max_length=100)
@@ -65,7 +85,7 @@ class Sprint(models.Model):
         return self.title
 
 
-class Epic(Issue):
+class Epic(Issue, StatusIssue):
     user = models.ForeignKey("users.CustomUser", blank=False, null=True, on_delete=models.CASCADE)
     hashtag = models.ForeignKey(Hashtag,
                                 related_name='epics', blank=True, null=True, on_delete=models.CASCADE)
@@ -75,7 +95,7 @@ class Epic(Issue):
         return self.title
 
 
-class Story(Issue):
+class Story(Issue, StatusIssue, StateIssue):
     user = models.ForeignKey("users.CustomUser", blank=False, null=True, on_delete=models.CASCADE)
     hashtag = models.ForeignKey(Hashtag,
                                 related_name='stories', blank=True, null=True, on_delete=models.CASCADE)
@@ -86,7 +106,7 @@ class Story(Issue):
         return self.title
 
 
-class Bug(Issue):
+class Bug(Issue, StatusIssue, StateIssue):
     user = models.ForeignKey("users.CustomUser", blank=False, null=True, on_delete=models.CASCADE)
     hashtag = models.ForeignKey(Hashtag,
                                 related_name='bugs', blank=True, null=True, on_delete=models.CASCADE)
@@ -97,7 +117,7 @@ class Bug(Issue):
         return self.title
 
 
-class Task(Issue):
+class Task(Issue, StatusIssue, StateIssue):
     user = models.ForeignKey("users.CustomUser", blank=False, null=True, on_delete=models.CASCADE)
     hashtag = models.ForeignKey(Hashtag,
                                 related_name='tasks', blank=True, null=True, on_delete=models.CASCADE)
@@ -109,7 +129,7 @@ class Task(Issue):
         return self.title
 
 
-class Subtask(Issue):
+class Subtask(Issue, StatusIssue, StateIssue):
     user = models.ForeignKey("users.CustomUser", blank=False, null=True, on_delete=models.CASCADE)
     hashtag = models.ForeignKey(Hashtag,
                                 related_name='subtasks', blank=True, null=True, on_delete=models.CASCADE)
