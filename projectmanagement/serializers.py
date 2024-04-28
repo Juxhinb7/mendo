@@ -100,7 +100,7 @@ class StateIssueSerializer(serializers.ModelSerializer):
         abstract = True
 
 
-class SprintSerializer(serializers.ModelSerializer):
+class SprintSerializer(serializers.ModelSerializer, StatusIssueSerializer):
     id = serializers.ReadOnlyField()
 
     stories = serializers.SlugRelatedField(
