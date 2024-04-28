@@ -63,6 +63,7 @@ class StateIssue(models.Model):
     class State(models.IntegerChoices):
         BACKLOG = 1, "Backlog"
         ACTIVE = 2, "Active"
+        INACTIVE = 3, "Inactive"
 
     state = models.PositiveIntegerField(
         choices=State.choices,
