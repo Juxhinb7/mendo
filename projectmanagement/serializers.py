@@ -124,8 +124,6 @@ class SprintSerializer(StateIssueSerializer):
 
 class IssueSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
-    start_date = serializers.DateTimeField(validators=[custom_validators.validate_date])
-    end_date = serializers.DateTimeField(validators=[custom_validators.validate_date])
 
     class Meta:
         model = models.Issue
