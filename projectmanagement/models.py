@@ -7,7 +7,7 @@ from django.db import models
 class Project(models.Model):
     user = models.ForeignKey("users.CustomUser", blank=False, null=True, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
-    description = models.CharField(max_length=500)
+    description = models.CharField(max_length=1500)
 
     def __str__(self):
         return self.title
