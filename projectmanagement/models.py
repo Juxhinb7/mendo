@@ -40,7 +40,7 @@ class StatusIssue(models.Model):
 class Issue(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=50)
-    description = models.CharField(max_length=500)
+    description = models.CharField(max_length=1000)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
 
